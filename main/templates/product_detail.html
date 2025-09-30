@@ -1,25 +1,88 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>{{ product.name }} - Pacil Store</title>
+{% endblock meta %}
+
 {% block content %}
-<p><a href="{% url 'main:show_main' %}"><button>← Back to Product List</button></a></p>
+<div class="bg-gray-50 w-full min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        <!-- Back Navigation -->
+        <div class="mb-6">
+            <a href="{% url 'main:show_main' %}" class="text-sky-600 hover:text-sky-700 font-medium transition-colors">
+                ← Back to Product List
+            </a>
+        </div>
+        
+        <!-- Article -->
+        <article class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            
+            <!-- Header -->
+            <div class="p-6 sm:p-10">
+                <div class="flex flex-wrap items-center gap-2 mb-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-sky-600 text-white">
+                        {{ product.get_category_display }}
+                    </span>
+                    {% if product.is_featured %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-200 text-yellow-800">
+                            ⭐ Featured
+                        </span>
+                    {% endif %}
+                    {% if product.is_product_hot %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-200 text-red-800">
+                            🔥 Hot
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <h1 class="text-4xl font-extrabold text-gray-900 leading-tight mb-4">
+                    {{ product.name }}
+                </h1>
+                
+                <div class="flex flex-wrap items-center text-sm text-gray-500 gap-6">
+                    <time datetime="{{ product.created_at|date:'c' }}">
+                        {{ product.created_at|date:"M j, Y g:i A" }}
+                    </time>
+                    <span>👀 {{ product.product_views }} views</span>
+                </div>
+            </div>
 
-<h1>{{ product.name }}</h1>
-<p><b>{{ product.category }}</b>
-    {% if product.is_featured %} | <b>Featured</b>{% endif %}
-    {% if product.is_product_hot %} | <b>Hot</b>{% endif %}
-    | <i>{{ product.created_at|date:"d M Y, H:i" }}</i>
-    | Views: {{ product.product_views }}</p>
+            <!-- Featured Image -->
+            {% if product.thumbnail %}
+                <div class="px-6 sm:px-10">
+                    <img src="{{ product.thumbnail }}" 
+                         alt="{{ product.name }}" 
+                         class="w-full h-72 sm:h-80 lg:h-[28rem] object-cover rounded-lg shadow-md">
+                </div>
+            {% endif %}
 
-{% if product.thumbnail %}
-<img src="{{ product.thumbnail }}" alt="Product thumbnail" width="300">
-<br /><br />
-{% endif %}
+            <!-- Description -->
+            <div class="p-6 sm:p-10">
+                <div class="prose prose-lg max-w-none">
+                    <div class="text-gray-700 leading-relaxed whitespace-pre-line text-lg">
+                        {{ product.description }}
+                    </div>
+                </div>
+            </div>
 
-<p>{{ product.description }}</p>
-
-{% if product.user %}
-    <p>Author: {{ product.user.username }}</p>
-{% else %}
-    <p>Author: Anonymous</p>
-{% endif %}
-
+            <!-- Author Info -->
+            <div class="border-t border-gray-200 bg-gray-50 p-6 sm:p-8">
+                <div class="flex items-center">
+                    <div>
+                        <p class="font-medium text-gray-900">
+                            {% if product.user %}
+                                Author: {{ product.user.username }}
+                            {% else %}
+                                Author: Anonymous
+                            {% endif %}
+                        </p>
+                        <p class="text-sm text-gray-500">Thank you for choosing this product!</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
 {% endblock content %}

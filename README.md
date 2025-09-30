@@ -1,5 +1,85 @@
 Link pws: https://jovian-felix-pacilstore.pbp.cs.ui.ac.id/
 
+- README 5 :
+   1. Secara umum, ada 5 urutan selector diurutkan berdasarkan prioritynya. Jika ada dua atau lebih selector pada suatu elemen, maka yang memiliki prioritas tertinggi yang diterapkan. Berikut urutan beserta penjelasannya (paling kuat ke lemah): 
+   - Inline style : Selector yang langsung ditulis di elemen HTML, biasanya dengan atribut "style". Ini adalah jenis dengan prioritas tertinggi karena langsung berhubungan dengan elemen tersebut. Contohnya : <p style = "color:green;"> Paragraph </p>
+   - ID selector : Selector yang bekerja berdasarkan ID tertentu. Setiap ID yang dibuat harus unik dan untuk best practice, setiap ID hanya boleh merepresentasikan satu elemen saja. Contohnya : <p id="line1" style="color: blue;">Line 1</p>
+   - Classes, attribute, dan pseudo-classes : Selector yang bekerja berdasarkan class, attribute atau pseudo-class yang sama. Untuk class, hanya dicocokkan yaitu nama class. Sedangkan untuk attribute, bisa dicocokkan hanya jenis atribute atau lebih spesifik dengan nilai atribute tersebut. Terakhir, untuk pseudo-class, dicocokkan berdasarkan state yang sedang terjadi. Berbeda dengan ID selector dan inline style, ketiganya bisa dipakai untuk banyak elemen secara bersamaan. Contoh : 
+   a. Classes
+   <p class="line1">line1</p>
+   <p class="line1">LINE1</p>
+
+   .line1 {
+   color: red;
+   font-weight: bold;
+   }
+
+   b. Attributes
+   <a href="https://goolge.com">Link 1</a>
+   <a href="https://youtube.com">Link 2</a>
+
+   Select semua elemen dengan atribute href :
+   a[href] {       
+   color: blue;
+   }
+
+   Select semua elemen dengan atribute href=https://goolge.com
+   a[href="https://goolge.com"] {
+   font-weight: bold;
+   }
+
+   c. Pseudo-class 
+   <ul>
+   <li>Item 1</li>
+   </ul>
+
+   li:hover {
+   color: green;
+   }
+
+   - Elements dan pseudo-elements : Selector hanya berdasarkan jenis element. Untuk element, dia select semuanya secara keseluruhan. Sedangkan untuk pseudo-elements, dia hanya select bagian spesifik dari elemen. Contohnya : 
+   a. Elements 
+   <p>Ini paragraf satu</p>
+
+   p {
+   color: blue;
+   }
+
+   b. Pseudo-elements 
+   <p>Ini paragraf satu</p>
+
+   p::before {
+   content: ">> "; /* menambahkan tanda sebelum teks */
+   color: red;
+   }
+
+   - Universal selector : Jenis selector yang bersifat universal. Selector ini akan mempengaruhi semua elemen langsung. Contoh :
+   * {
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
+   }
+
+   2. Reponsive design dalam pengembangan web adalah suatu metode pendekatan design dimana tampilan web menyesuaikan dari ukuran layar dan jenis perangkat dari user. Hal ini penting karena di era sekarang, web sudah bisa diakses dari perangkat mana saja (paling umum desktop dan mobile). Jika tampilan design bersifat tetap atau fixed, maka pengguna di beberapa perangkat tertentu akan mendapatkan tampilan yang kurang maksimal. Hampir semua aplikasi web zaman sekarang sudah menerapkan responsive design seperti instagram, tokopedia, dan lain-lain. Mereka dapat menyesuaikan tampilan webnya baik diakses dari perangkat dekstop ataupun mobile. Sedangkan contoh untuk non responsive design yaitu https://dequeuniversity.com/library/responsive/1-non-responsive. Di web tersebut, dia menggunakan fixed layout sehingga saat diakses melalui perangkat mobile, tampilannya tidak maksimal.
+
+   3. Misal kita mempunyai sebuah wadah atau container untuk menampung suatu content. Padding adalah jarak dari content (isi elemen) terhadap tepi elemen. Tepi elemen disinilah yang disebut border. Jadi border adalah sebuah elemen yang membungkus content beserta paddingnya. Sedangkan margin adalah jarak dari suatu elemen (border) terhadap elemen lain. Contoh implementasinya seperti berikut : 
+   <div class="box">Isi Content</div>
+
+   .box {
+   padding: 20px;
+   border: 2px solid red;
+   margin: 30px;        
+   }
+
+   4. Ada 2 jenis layout yang sering digunakan dalam mengatur tata letak antar elemen yaitu flex box dan grid layout. Flex box menggunakan konsep satu dimensi. Jadi, cuman ada satu baris atau satu kolom saja dalam flex box. Tapi di sini kita tetap bisa melakukan beberapa hal seperti ubah jarak antar elemen, atur alignnya, dan lain-lain. Flex box biasa digunakan jika kita memang hanya perlu fokus pada satu dimensi seperti navbar yang sudah dibuat dalam proyek ini. Sedangkan grid layout menggunakan konsep dua dimensi sehingga ada row dan column. Kita bisa bayangkan seperti tabel yang memiliki beberapa row dan column. Di sini juga kita bisa melakukan beberapa hal untuk mengatur layout sesuai keinginan kita. Contoh kegunaannya bisa kita lihat pada proyek ini bagian menampilkan list produk. Jadi, produk ditampilkan seperti tabel, dari kiri ke kanan kemudian atas ke bawah.
+
+   5. - Checklist 1 : Membuat 2 fungsi baru di views.py yaitu edit_product dan delete_product yang mendapatkan object berdasarkan id. Kemudian, tambahkan juga kedua fungsi tersebut di bagian import dan urlpatterns di urls.py agar dapat terhubung.
+      - Checklist 2 : Saya menggunakan framework tailwind untuk proyek ini sehingga saya menyambungkan django dengan tailwind di berkas base.html.
+      - Checklist 3 : Buat berkas baru yaitu edit_product.html untuk tampilan form saat kita mau mengubah data sebuah produk. Lalu, mendesain ulang tampilan login, register, tambah product, edit product dan detail product menggunakan tailwind. Di sini, saya menggunakan template seperti tutorial sebagai dasar tetapi saya mengubah beberapa hal seperti warna, font size, alignment, dan lain-lain. 
+      - Checklist 4,5,6 : Untuk halaman daftar produk, saya buat berkas baru yaitu card_product.html yang mengatur bagaimana setiap produk ditampilkan di list produk. Di sini, menggunakan jenis layout grid. Jika tidak ada produk yang ditemukan, maka akan menampilkan gambar dan informasi no product found. Tampilan card_product di sini juga saya mengikuti template dari tutorial tetapi ada beberapa hal yang saya ubah jadi tidak sama persis.
+      - Checklist 7 : Tambahkan dua button untuk setiap card_product yaitu edit dan delete. Jika kita klik delete, maka produk tersebut akan terhapus di tampilan dan database. Sedangkan untuk button edit, dia akan mengarahkan kita pada tampilan sesuai dengan berkas edit_product.html dan kita dapat mengubah data produk kita di sana.
+      - Checklist 8 : Terakhir, buat berkas navbar.html untuk tampilan navigasi web kita. Di sini, kita terapkan konsep responsive design dimana tampilan menyesuaikan pada parangkat yang digunakan (mobile atau desktop). 
+
 - README 4 :
   1. Django AuthenticationForm merupakan suatu fitur bawaan django untuk menangani proses autentikasi (login) user. Secara default, form ini mempunyai 2 field untuk autentikasi yaitu username dan password. Setelah user memasukkan username dan passwordnya, django akan otomatis mencocokkan dengan database user. Jika cocok, maka autentikasi berhasil dan user dapat lanjut. Dengan adanya fitur bawaan ini, tentu saja django menawarkan beberapa kelebihan seperti :
   - Tidak perlu membuat suatu form untuk proses autentikasi dari nol sehingga dapat mempermudah dan mempercepat proses pengembangan.
