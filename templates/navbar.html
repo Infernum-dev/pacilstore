@@ -24,7 +24,7 @@
               <div class="text-sm font-medium text-gray-900">{{ name|default:user.username }}</div>
               <div class="text-xs text-gray-500">{{ npm|default:"2406360016" }} - {{ class|default:"Class" }}</div>
             </div>
-            <a href="{% url 'main:logout' %}" class="text-red-600 hover:text-red-700 font-medium transition-colors">
+            <a id='logoutbutton' href="#" class="text-red-600 hover:text-red-700 font-medium transition-colors">
               Logout
             </a>
           {% else %}
@@ -70,7 +70,7 @@
               <div class="font-medium text-gray-900">{{ name|default:user.username }}</div>
               <div class="text-sm text-gray-500">{{ npm|default:"2406360016" }} - {{ class|default:"Class" }}</div>
             </div>
-            <a href="{% url 'main:logout' %}" class="block text-red-600 hover:text-red-700 font-medium py-3 transition-colors">
+            <a id='logoutbutton' href="#" class="block text-red-600 hover:text-red-700 font-medium py-3 transition-colors">
               Logout
             </a>
           {% else %}
@@ -93,5 +93,35 @@
       btn.addEventListener("click", () => {
         menu.classList.toggle("hidden");
       });
+      const logoutButtons = document.querySelectorAll('#logoutbutton'); 
+
+      logoutButtons.forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.preventDefault(); 
+
+          try {
+            const res = await fetch("{% url 'main:logout' %}", {
+              method: 'POST',
+              headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+
+            const data = await res.json();
+
+            if (data.status === 'success') {
+              showToast('Logout', data.message, 'success');
+              setTimeout(() => {
+                window.location.href = "{% url 'main:login' %}";
+              }, 1000);
+            } else {
+              showToast('Logout', data.message || 'Failed to logout.', 'error');
+            }
+
+          } catch (err) {
+            console.error(err);
+            showToast('Logout', 'Something went wrong.', 'error');
+          }
+        });
+      });
+
     </script>
   </nav>

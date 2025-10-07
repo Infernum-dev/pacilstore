@@ -1,5 +1,29 @@
 Link pws: https://jovian-felix-pacilstore.pbp.cs.ui.ac.id/
 
+- README 6 : 
+   1. Dalam komunikasi antara server dan client, ada 2 cara yaitu synchronous dan asynchronous. Pada komunikasi synchronous, client mengirim request ke server dan harus menunggu sampai server merespon sebelum dapat lanjut ke request berikutnya. Cara ini bisa membuat web menjadi lambat jika respons dari server juga lambat karena mengakibatkan request lain jadi terblokir. Sedangkan untuk komunikasi asynchronous, client mengirim request ke server tapi tidak menunggu respon langsung sehingga request lain tetap bisa dijalankan. Hal ini membuat beberapa request dapat berjalan secara paralel dalam waktu bersamaan. Dengan kata lain, web bisa memperbarui sebagian konten tanpa harus reload halaman dengan menggunakan metode asynchronous. 
+
+   2. Salah satu penerapan asynchronous request adalah melalui penggunaan AJAX. AJAX sendiri merupakan singkatan dari Asynchronous JavaScript and XML. Melalui AJAX, data bisa dikirim atau diambil antara server dan client tanpa perlu reload satu halaman penuh. Berikut alurnya : 
+   - Pertama, user atau client mentrigger suatu event seperti klik suatu tombol. Aksi tersebut membuat kode JavaScript untuk mengirim request ke server secara asynchronous, biasanya menggunakan metode seperti fetch() atau XMLHttpRequest.
+   - Kedua, Django menerima request tersebut dan langsung mencocokkan ke urls.py dan melihat fungsi mana yang akan dieksekusi di views.py. Di sini, fungsi bisa saja mengambil, mengolah atau mengirim data ke database. Kemudian, server akan mengirim balik sebuah data mentah dengan format tertentu (JSON atau XML). 
+   - Browser yang menerima respons tersebut tidak membuat halaman baru, melainkan hanya mengubah tampilan bagian tertentu sesuai respons yang didapat. Hal inilah yang membedakan AJAX dengan render biasa.
+
+   3. Beberapa keuntungan AJAX dibanding render biasa di Django : 
+   - Tidak perlu reload satu halaman penuh : Dengan menggunakan AJAX, hanya bagian tertentu saja yang diperbarui. Sedangkan dengan render biasa, setiap request akan membuat seluruh halaman di reload ulang.
+   - Lebih efisien : AJAX hanya mengirim dan menerima data yang dibutuhkan saja dalam format JSON atau XML. Sedangkan render, biasanya mengirim ulang seluruh HTML,CSS, dan komponen lainnya.
+   - Tampilan lebih dinamis : AJAX membuat halaman bisa diupdate secara real time. Jadi, misal pengguna yang melakukan suatu aksi, maka halaman tersebut langsung berubah tanpa perlu reload manual. Reload manual hanya diperlukan ketika seluruh html dan css berubah seperti pada penggunaan render biasa. Namun, jika hanya sebagian saja yang berubah, kita bisa menggunakan cara kerja DOM.
+
+   4. Ada beberapa cara untuk memastikan keamanan saat menggunakan AJAX untuk fitur Login dan Register :
+   - Selalu gunakan koneksi terenkripsi yaitu HTTPS. Dengan ini, maka pertukaran data antar client dan server selalu terlindungi dan data tidak bisa dicuri dari pihak ketiga. Selain itu, penggunaan HTTPS juga mencegah serangan Man In The Middle (MITM) yang bisa mengubah data sebelum sampai ke tujuan (server). 
+   - Selalu sertakan CSRF token pada setiap fetch() atau AJAX POST. Hal ini mencegah penyerang untuk mengirim request atas nama akun user yang sedang login. Pastikan juga middleware CSRF aktif.
+   - Pakai strip tags untuk mencegah serangan XSS. Hal ini akan menghapus seluruh tag HTML dari input pengguna, termasuk tag berbahaya seperti <img onerror=...> sehingga tag tersebut tidak dieksekusi oleh browser client. Jadi nanti data yang tersimpan adalah data yang sudah bersih.
+
+   5. Pengaruh penggunaan AJAX terhadap pengalaman pengguna : 
+   - Halaman web menjadi lebih cepat dan responsif karena AJAX hanya memperbarui data yang terlibat, bukan seluruh halaman.
+   - Interaksi dinamis dan real time karena kita tidak perlu reload untuk melihat perubahan menggunakan AJAX
+   - Lebih hemat resource karena AJAX cuman mengambil data yang dibutuhkan bukan seluruh HTML dan CSS suatu halaman.
+   - Transisi mulus karena tidak adanya reload manual, jadi terhindari dari tampilan seperti berubah secara tiba-tiba.
+
 - README 5 :
    1. Secara umum, ada 5 urutan selector diurutkan berdasarkan prioritynya. Jika ada dua atau lebih selector pada suatu elemen, maka yang memiliki prioritas tertinggi yang diterapkan. Berikut urutan beserta penjelasannya (paling kuat ke lemah): 
    - Inline style : Selector yang langsung ditulis di elemen HTML, biasanya dengan atribut "style". Ini adalah jenis dengan prioritas tertinggi karena langsung berhubungan dengan elemen tersebut. Contohnya : <p style = "color:green;"> Paragraph </p>

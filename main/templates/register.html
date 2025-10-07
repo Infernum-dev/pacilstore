@@ -13,33 +13,9 @@
         <h2 class="text-3xl font-bold text-gray-800 mb-1">Create Account</h2>
         <p class="text-gray-500 text-sm">Join Pacil Store today</p>
       </div>
+      <div id="register-alert" class="hidden mb-4"></div>
 
-      <!-- Form Errors -->
-      {% if form.non_field_errors %}
-        <div class="mb-4">
-          {% for error in form.non_field_errors %}
-            <div class="px-4 py-3 rounded-md text-sm border bg-red-100 border-red-300 text-red-800">
-              {{ error }}
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-
-      {% if form.errors %}
-        <div class="mb-4">
-          {% for field, errors in form.errors.items %}
-            {% if field != '__all__' %}
-              {% for error in errors %}
-                <div class="px-4 py-3 rounded-md text-sm border bg-red-100 border-red-300 text-red-800 mb-2">
-                  <strong>{{ field|title }}:</strong> {{ error }}
-                </div>
-              {% endfor %}
-            {% endif %}
-          {% endfor %}
-        </div>
-      {% endif %}
-
-      <form method="POST" action="" class="space-y-5">
+      <form id="registerForm" class="space-y-5">
         {% csrf_token %}
         
         <div>
@@ -82,27 +58,6 @@
         </button>
       </form>
 
-      <!-- Messages -->
-      {% if messages %}
-        <div class="mt-5">
-          {% for message in messages %}
-            <div 
-              class="
-                px-4 py-3 rounded-md text-sm border
-                {% if message.tags == 'success' %}
-                  bg-sky-50 border-sky-200 text-sky-700
-                {% elif message.tags == 'error' %}
-                  bg-red-50 border-red-200 text-red-700
-                {% else %}
-                  bg-gray-50 border-gray-200 text-gray-700
-                {% endif %}
-              ">
-              {{ message }}
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-
       <div class="mt-5 text-center border-t border-gray-100 pt-5">
         <p class="text-gray-500 text-sm">
           Already have an account? 
@@ -115,4 +70,41 @@
     </div>
   </div>
 </div>
+
+<script>
+const registerForm = document.getElementById('registerForm');
+
+registerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(registerForm);
+
+  try {
+    const response = await fetch("{% url 'main:register' %}", {
+      method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (result.status === 'success') {
+      showToast('Success', result.message, 'success');
+      setTimeout(() => {
+        window.location.href = "{% url 'main:login' %}";
+      }, 1500);
+    } else if (result.status === 'error') {
+      const errorMessages = Object.values(result.errors)
+        .flat()
+        .map(msgArr => msgArr.map(m => m.message || m).join(', '))
+        .join('\n');
+      showToast('Error', errorMessages, 'error', 4000);
+    }
+
+  } catch (err) {
+    console.error(err);
+    showToast('Error', 'Something went wrong, please try again.', 'error');
+  }
+});
+</script>
+
 {% endblock content %}

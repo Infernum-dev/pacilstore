@@ -12,33 +12,9 @@
         <h1 class="text-3xl font-bold text-gray-800 mb-1">Welcome Back</h1>
         <p class="text-gray-500 text-sm">Login to continue</p>
       </div>
+      <div id="login-alert" class="hidden mb-4"></div>
 
-      <!-- Error Alerts -->
-      {% if form.non_field_errors %}
-        <div class="mb-4">
-          {% for error in form.non_field_errors %}
-            <div class="px-4 py-3 rounded-md text-sm border bg-red-100 border-red-300 text-red-800">
-              {{ error }}
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-
-      {% if form.errors %}
-        <div class="mb-4">
-          {% for field, errors in form.errors.items %}
-            {% if field != '__all__' %}
-              {% for error in errors %}
-                <div class="px-4 py-3 rounded-md text-sm border bg-red-100 border-red-300 text-red-800 mb-2">
-                  <strong>{{ field|title }}:</strong> {{ error }}
-                </div>
-              {% endfor %}
-            {% endif %}
-          {% endfor %}
-        </div>
-      {% endif %}
-
-      <form method="POST" class="space-y-5">
+      <form id="loginForm" class="space-y-5">
         {% csrf_token %}
         
         <div>
@@ -70,27 +46,6 @@
         </button>
       </form>
 
-      <!-- Messages Display -->
-      {% if messages %}
-        <div class="mt-5">
-          {% for message in messages %}
-            <div 
-              class="
-                px-4 py-3 rounded-md text-sm border
-                {% if message.tags == 'success' %}
-                  bg-sky-50 border-sky-200 text-sky-700
-                {% elif message.tags == 'error' %}
-                  bg-red-50 border-red-200 text-red-700
-                {% else %}
-                  bg-gray-50 border-gray-200 text-gray-700
-                {% endif %}
-              ">
-              {{ message }}
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-
       <div class="mt-5 text-center border-t border-gray-100 pt-5">
         <p class="text-gray-500 text-sm">
           Don’t have an account?
@@ -102,4 +57,44 @@
     </div>
   </div>
 </div>
+
+<script>
+const loginForm = document.getElementById('loginForm');
+
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(loginForm);
+
+  try {
+    const response = await fetch("{% url 'main:login' %}", {
+      method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (result.status === 'success') {
+      showToast('Success', 'Login successful!', 'success', 1500);
+      setTimeout(() => {
+        window.location.href = "{% url 'main:show_main' %}";
+      }, 1500);
+    } else {
+      showToast('Error', result.message || 'Login failed, check your credentials', 'error', 4000);
+    }
+
+  } catch (err) {
+    console.error(err);
+    showToast('Error', 'Something went wrong, please try again.', 'error');
+  }
+});
+window.addEventListener('DOMContentLoaded', () => {
+    const logoutToast = document.cookie.split('; ').find(row => row.startsWith('logout_toast='));
+    if (logoutToast) {
+        showToast('Success', 'You have been logged out.', 'success', 3000);
+        // Hapus cookie supaya toast nggak muncul lagi
+        document.cookie = 'logout_toast=; Max-Age=0; path=/';
+    }
+});
+</script>
 {% endblock content %}
