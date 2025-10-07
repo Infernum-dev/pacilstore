@@ -83,23 +83,22 @@
       }, 150); 
   }
   async function addProductEntry() {
-    await fetch("{% url 'main:add_product_entry_ajax' %}", {
+    const response = await fetch("{% url 'main:add_product_entry_ajax' %}", {
       method: "POST",
       body: new FormData(document.querySelector('#productForm')),
-    })
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+
+    if (!response.ok) throw new Error('Failed to add product');
+
+    const newProduct = await response.json(); 
+    allProductData.push(newProduct); 
 
     document.getElementById("productForm").reset();
     hideModal();
       
-    // Show toast notification
     showToast('Product added successfully!', '', 'success');
 
-    document.dispatchEvent(new CustomEvent('productAdded'));
-
-    return false;
+    filterAndDisplayProduct();
   }
-  document.getElementById("productForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-    addProductEntry();
-})
 </script>
