@@ -202,24 +202,25 @@ def delete_product(request, id):
 @csrf_exempt
 @require_POST
 def add_product_entry_ajax(request):
-    product = Product(
-        name=request.POST.get("name"),
-        description=request.POST.get("description"),
-        category=request.POST.get("category"),
-        thumbnail=request.POST.get("thumbnail"),
-        is_featured=request.POST.get("is_featured") == "on",
-        user=request.user
-    )
-    product.save()
+    name = request.POST.get("name")
+    price = request.POST.get("price")
+    description = request.POST.get("description")
+    category = request.POST.get("category")
+    thumbnail = request.POST.get("thumbnail")
+    stock = request.POST.get("stock")
+    is_featured = request.POST.get("is_featured") == 'on'  # checkbox handling
+    user = request.user
 
-    return JsonResponse({
-        "id": str(product.id),
-        "name": product.name,
-        "description": product.description,
-        "category": product.category,
-        "thumbnail": product.thumbnail,
-        "is_featured": product.is_featured,
-        "product_views": product.product_views,
-        "user_id": product.user.id,
-        "created_at": product.created_at.isoformat()
-    })
+    new_product = Product(
+        name=name, 
+        price=price,
+        description=description,
+        category=category,
+        thumbnail=thumbnail,
+        stock = stock,
+        is_featured=is_featured,
+        user=user
+    )
+    new_product.save()
+
+    return HttpResponse(b"CREATED", status=201)

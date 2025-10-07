@@ -87,6 +87,9 @@ const emptyStateDisplay = document.getElementById('empty');
 const productGridContainer = document.getElementById('grid');
 const showAllProductButton = document.getElementById('filter-all');
 const showMyProductButton = document.getElementById('filter-my');
+const refreshButton = document.getElementById('refreshButton');
+const refreshText = document.getElementById('refreshText');
+const refreshSpinner = document.getElementById('refreshSpinner');
 
 // State Variables
 let activeFilter = 'all';
@@ -116,17 +119,15 @@ function displayPageSection({ showLoading = false, showError = false, showEmpty 
   }
 }
 
-
-
 // Create product card element
 function buildProductCardElement(productItem) {
   const productElement = document.createElement('article');
   productElement.id = `product-${productItem.id}`;
   productElement.className = 'bg-[#0c2357] rounded-lg border border-gray-200 hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col h-full';
 
-  const detailLink = `{% url 'main:show_product' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000',productItem.id);
-  const editLink = `{% url 'main:edit_product' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000',productItem.id);
-  const deleteLink = `{% url 'main:delete_product' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000',productItem.id);
+  const detailLink = `{% url 'main:show_product' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', productItem.id);
+  const editLink = `{% url 'main:edit_product' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', productItem.id);
+  const deleteLink = `{% url 'main:delete_product' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', productItem.id);
 
   const formattedDate = new Date(productItem.created_at).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -139,7 +140,7 @@ function buildProductCardElement(productItem) {
   const isHot = productItem.product_views > 20;
 
   const thumbnailHtml = productItem.thumbnail
-    ? `<img src='${productItem.thumbnail}' alt='${productItem.title}' class='w-full h-full object-cover'>`
+    ? `<img src='${productItem.thumbnail}' alt='${productItem.name}' class='w-full h-full object-cover'>`
     : `<div class='w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center'></div>`;
 
   const featuredBadge = isFeatured
@@ -198,13 +199,6 @@ function renderAllProductCards(productItems) {
   });
 }
 
-document.querySelectorAll('.delete-btn').forEach(btn => {
-    btn.addEventListener('click', async function(e) {
-        e.preventDefault(); 
-        const productId = this.dataset.id;
-        await deleteProduct(productId);
-    });
-});
 // Filter and display product
 function filterAndDisplayProduct() {
   updateFilterButtonsAppearance();
@@ -255,21 +249,21 @@ function handleShowMyProductClick() {
 }
 
 // Initialize page
-async function initializeProductPage() {
-    await fetchProductFromServer(); 
-    showAllProductButton.addEventListener('click', handleShowAllProductClick);
-    showMyProductButton.addEventListener('click', handleShowMyProductClick);
+function initializeProductPage() {
+  // Add event listeners
+  showAllProductButton.addEventListener('click', handleShowAllProductClick);
+  showMyProductButton.addEventListener('click', handleShowMyProductClick);
+  
+  // Load products immediately on page load
+  fetchProductFromServer();
 }
 
-
-
-// Start application
-initializeProductPage();
-
+// Event listener for product added via AJAX
 document.addEventListener('productAdded', function() {
-    // Refresh data without page reload
     fetchProductFromServer();
 });
+
+// Refresh button handler
 refreshButton.addEventListener('click', async () => {
     refreshButton.disabled = true;
     refreshText.textContent = 'Loading...';
@@ -290,5 +284,8 @@ refreshButton.addEventListener('click', async () => {
     refreshText.textContent = '🔄 Refresh Products';
     refreshSpinner.classList.add('hidden');
 });
+
+// Start application
+initializeProductPage();
 </script>
 {% endblock content %}
