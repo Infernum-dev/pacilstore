@@ -255,11 +255,10 @@ function handleShowMyProductClick() {
 }
 
 // Initialize page
-function initializeProductPage() {
-  showAllProductButton.addEventListener('click', handleShowAllProductClick);
-  showMyProductButton.addEventListener('click', handleShowMyProductClick);
-  
-  fetchProductFromServer();
+async function initializeProductPage() {
+    await fetchProductFromServer(); 
+    showAllProductButton.addEventListener('click', handleShowAllProductClick);
+    showMyProductButton.addEventListener('click', handleShowMyProductClick);
 }
 
 

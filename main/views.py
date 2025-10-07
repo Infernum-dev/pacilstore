@@ -198,28 +198,28 @@ def delete_product(request, id):
         return JsonResponse({'status': 'success', 'message': 'Product deleted successfully'})
     return HttpResponseRedirect(reverse('main:show_main'))
 
+
 @csrf_exempt
 @require_POST
 def add_product_entry_ajax(request):
-    name = request.POST.get("name")
-    price = request.POST.get("price")
-    description = request.POST.get("description")
-    category = request.POST.get("category")
-    thumbnail = request.POST.get("thumbnail")
-    is_featured = request.POST.get("is_featured") == 'on'
-    stock = request.POST.get("stock")  # checkbox handling
-    user = request.user
-
-    new_product = Product(
-        name = name, 
-        price = price,
-        description = description,
-        category=category,
-        thumbnail=thumbnail,
-        is_featured=is_featured,
-        stock = stock,
-        user=user
+    product = Product(
+        name=request.POST.get("name"),
+        description=request.POST.get("description"),
+        category=request.POST.get("category"),
+        thumbnail=request.POST.get("thumbnail"),
+        is_featured=request.POST.get("is_featured") == "on",
+        user=request.user
     )
-    new_product.save()
+    product.save()
 
-    return HttpResponse(b"CREATED", status=201)
+    return JsonResponse({
+        "id": str(product.id),
+        "name": product.name,
+        "description": product.description,
+        "category": product.category,
+        "thumbnail": product.thumbnail,
+        "is_featured": product.is_featured,
+        "product_views": product.product_views,
+        "user_id": product.user.id,
+        "created_at": product.created_at.isoformat()
+    })

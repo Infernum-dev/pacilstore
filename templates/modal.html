@@ -83,21 +83,21 @@
       }, 150); 
   }
   async function addProductEntry() {
-    await fetch("{% url 'main:add_product_entry_ajax' %}", {
-      method: "POST",
-      body: new FormData(document.querySelector('#productForm')),
-    })
+    const response = await fetch("{% url 'main:add_product_entry_ajax' %}", {
+        method: "POST",
+        body: new FormData(document.querySelector('#productForm'))
+    });
+
+    if (!response.ok) throw new Error("Failed to create product");
+
+    const newProduct = await response.json(); // ambil product baru
+    allProductData.push(newProduct);          // push ke state
+    filterAndDisplayProduct();                // render grid
 
     document.getElementById("productForm").reset();
     hideModal();
-      
     showToast('Product added successfully!', '', 'success');
-
-
-    document.dispatchEvent(new CustomEvent('productAdded'));
-
-    return false;
-  }
+}
   document.getElementById("productForm").addEventListener("submit", function(e) {
     e.preventDefault();
     addProductEntry();
