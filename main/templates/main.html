@@ -271,7 +271,6 @@ document.addEventListener('productAdded', function() {
     // Refresh data without page reload
     fetchProductFromServer();
 });
-
 refreshButton.addEventListener('click', async () => {
     refreshButton.disabled = true;
     refreshText.textContent = 'Loading...';
