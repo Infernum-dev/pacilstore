@@ -12,6 +12,9 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
+import json
+import requests
 # Create your views here.
 @login_required(login_url='/login')
 def show_main(request):
@@ -62,21 +65,26 @@ def show_xml(request):
     return HttpResponse(xml_data, content_type="application/xml")
 
 def show_json(request):
-    products_list = Product.objects.all()
-    data = [
-            {
-                'id': str(product.id),
-                'name': product.name,
-                'description': product.description,
-                'category': product.category,
-                'thumbnail': product.thumbnail,
-                'product_views': product.product_views,
-                'created_at': product.created_at.isoformat() if product.created_at else None,
-                'is_featured': product.is_featured,
-                'user_id': product.user_id,
-            }
-            for product in products_list
-        ]
+    if not request.user.is_authenticated:
+        return JsonResponse({"status": "forbidden"}, status=401)
+
+    products = Product.objects.all()
+
+    data = []
+    for p in products:
+        data.append({
+            "id": p.pk,
+            "name": p.name,
+            "description": p.description,
+            "category": p.category,
+            "thumbnail": p.thumbnail,
+            "product_views": p.product_views,
+            "created_at": p.created_at.isoformat(),
+            "is_featured": p.is_featured,
+            "user_id": p.user.id,
+            "price": p.price,
+            "stock": p.stock,
+        })
 
     return JsonResponse(data, safe=False)
 
@@ -224,3 +232,76 @@ def add_product_entry_ajax(request):
     new_product.save()
 
     return HttpResponse(b"CREATED", status=201)
+
+def proxy_image(request):
+    image_url = request.GET.get('url')
+    if not image_url:
+        return HttpResponse('No URL provided', status=400)
+    
+    try:
+        # Fetch image from external source
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()
+        
+        # Return the image with proper content type
+        return HttpResponse(
+            response.content,
+            content_type=response.headers.get('Content-Type', 'image/jpeg')
+        )
+    except requests.RequestException as e:
+        return HttpResponse(f'Error fetching image: {str(e)}', status=500)
+
+@csrf_exempt
+def create_product_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        name = strip_tags(data.get("name", ""))  # Strip HTML tags
+        description = strip_tags(data.get("description", ""))  # Strip HTML tags
+        category = data.get("category", "")
+        thumbnail = data.get("thumbnail", "")
+        is_featured = data.get("is_featured", False)
+        price = data.get("price", 0)
+        stock = data.get("stock", 0)
+        user = request.user
+        
+        new_product = Product(
+            name=name, 
+            description=description,
+            category=category,
+            thumbnail=thumbnail,
+            is_featured=is_featured,
+            user=user,
+            price=price,
+            stock=stock,
+        )
+        new_product.save()
+        
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
+    
+def my_products_flutter(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"status": "forbidden"}, status=401)
+
+    products = Product.objects.filter(user=request.user)
+
+    data = []
+    for p in products:
+        data.append({
+            "id": p.pk,
+            "name": p.name,
+            "description": p.description,
+            "category": p.category,
+            "thumbnail": p.thumbnail,
+            "product_views": p.product_views,
+            "created_at": p.created_at.isoformat(),
+            "is_featured": p.is_featured,
+            "user_id": p.user.id,
+            "price": p.price,
+            "stock": p.stock,
+        })
+
+    return JsonResponse(data, safe=False)
+
+
